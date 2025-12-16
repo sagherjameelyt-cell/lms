@@ -9,7 +9,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
+        android.supportsRtl="true"
         android:theme="@style/Theme.Templatelms">
         <activity
             android:name=".SplashActivity"
@@ -25,9 +25,9 @@
         <activity android:name=".ui.password_reset.SendPasswordResetEmailActivity" />
         <activity android:name=".ui.password_reset.VerifyOtpActivity" />
         <activity android:name=".ui.password_reset.ResetPasswordActivity" />
-        <activity 
-            android:name=".MainActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".ui.lecture_schedule.LectureScheduleActivity" />
+        <activity android:name=".ui.lecture_schedule.TimetableActivity" />
     </application>
 
 </manifest>

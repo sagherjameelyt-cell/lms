@@ -1,31 +1,44 @@
 package com.example.template_lms.ui.theme
 
+import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Blue,
-    secondary = Color.Black,
-    tertiary = Color.White
+    primary = DarkTeal,
+    secondary = Teal,
+    tertiary = LightTeal,
+    background = DarkCharcoal,
+    surface = DarkCharcoal,
+    onPrimary = LightTeal,
+    onSecondary = LightTeal,
+    onTertiary = DarkCharcoal,
+    onBackground = LightTeal,
+    onSurface = LightTeal
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Blue,
-    secondary = Color.White,
-    tertiary = Color.Black
-
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+    primary = Teal,
+    secondary = DarkTeal,
+    tertiary = DarkCharcoal,
+    background = LightTeal,
+    surface = LightTeal,
+    onPrimary = DarkCharcoal,
+    onSecondary = DarkCharcoal,
+    onTertiary = LightTeal,
+    onBackground = DarkCharcoal,
+    onSurface = DarkCharcoal
 )
 
 @Composable
@@ -43,6 +56,14 @@ fun TemplateLMSTheme(
 
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
+    }
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
     }
 
     MaterialTheme(
