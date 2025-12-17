@@ -1,4 +1,4 @@
-package com.example.template_lms.ui.datesheet
+package com.example.template_lms.ui.exams
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,12 +48,49 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.template_lms.BottomNavigationBar
-import com.example.template_lms.ui.gradebook.Grade
-import com.example.template_lms.ui.gradebook.gradeBookData
+
+// --- Grade Book Data ---
+data class Grade(val subject: String, val grade: String, val marks: Int)
+data class GradeBook(
+    val semester: String,
+    val gpa: Double,
+    val grades: List<Grade>,
+    val pdfUrl: String
+)
+val gradeBookData = GradeBook(
+    semester = "5th Semester",
+    gpa = 3.91,
+    grades = listOf(
+        Grade("Data Structures", "A", 85),
+        Grade("Operating Systems", "A-", 80),
+        Grade("Database Systems", "B+", 78),
+        Grade("Software Engineering", "A", 88),
+        Grade("Computer Networks", "B", 75)
+    ),
+    pdfUrl = ""
+)
+
+// --- Date Sheet Data ---
+data class DateSheetInfo(
+    val examName: String,
+    val semester: String,
+    val program: String,
+    val uploadDate: String,
+    val fileType: String = "PDF",
+    val status: String
+)
+val dateSheetInfo = DateSheetInfo(
+    examName = "Final Term Examination",
+    semester = "5th Semester",
+    program = "BS-IT",
+    uploadDate = "20 Nov 2023",
+    status = "Latest"
+)
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatesheetScreen(navController: NavController, openDrawer: () -> Unit) {
+fun ExamsScreen(navController: NavController, openDrawer: () -> Unit) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Grade Book", "Date Sheet")
 
@@ -257,27 +294,6 @@ fun EmptyState(message: String) {
     }
 }
 
-
-
-data class DateSheetInfo(
-    val examName: String,
-    val semester: String,
-    val program: String,
-    val uploadDate: String,
-    val fileType: String = "PDF",
-    val status: String
-)
-
-// This would typically come from a ViewModel or API call
-val dateSheetInfo = DateSheetInfo(
-    examName = "Final Term Examination",
-    semester = "5th Semester",
-    program = "BS-IT",
-    uploadDate = "20 Nov 2023",
-    status = "Latest"
-)
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateSheetCard(info: DateSheetInfo) {
@@ -343,7 +359,7 @@ fun DateSheetCard(info: DateSheetInfo) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
             ) {
-                Button(onClick = { /* Handle View */ }, modifier = Modifier.weight(1f)) {
+                 Button(onClick = { /* Handle View */ }, modifier = Modifier.weight(1f)) {
                     Icon(Icons.Filled.RemoveRedEye, contentDescription = "View")
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("View")

@@ -54,7 +54,7 @@ dependencies {
     implementation("androidx.compose.material:material")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.navigation:navigation-compose:2.9.6")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("de.hdodenhof:circleimageview:3.1.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

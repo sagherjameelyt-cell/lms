@@ -1,46 +1,65 @@
 package com.example.template_lms.ui.gradebook
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.template_lms.BottomNavigationBar
 
-data class Subject(
-    val title: String,
-    val code: String,
-    val discipline: String,
-    val credits: String,
-    val icon: ImageVector
+data class Grade(val subject: String, val grade: String, val marks: Int)
+
+data class GradeBook(
+    val semester: String,
+    val gpa: Double,
+    val grades: List<Grade>,
+    val pdfUrl: String
 )
 
-val subjects = listOf(
-    Subject("Organic Chemistry II", "CHEM 301", "Science/Chemistry", "4 Credits (3 Lecture, 1 Lab)", Icons.Filled.Science),
-    Subject("Introduction to Psychology", "PSYC 101", "Social Sciences/Psychology", "3 Credits", Icons.Filled.Group),
-    Subject("Calculus III", "MATH 203", "Mathematics/Mathematics", "4 Credits", Icons.Filled.Calculate),
-    Subject("World History: 1500-Present", "HIST 102", "Humanities/History", "3 Credits", Icons.Filled.Public),
-    Subject("Public Speaking", "COMM 101", "Humanities/Communication", "2 Credits", Icons.Filled.RecordVoiceOver),
-    Subject("Introduction to Programming", "CS 101", "Engineering/Computer Science", "4 Credits (3 Lecture, 1 Lab)", Icons.Filled.Computer),
-    Subject("Principles of Economics", "ECON 201", "Social Sciences/Economics", "3 Credits", Icons.Filled.AttachMoney),
-    Subject("Human Anatomy and Physiology", "BIOL 250", "Science/Biology", "4 Credits (3 Lecture, 1 Lab)", Icons.Filled.AccessibilityNew),
-    Subject("Introduction to Sociology", "SOCI 101", "Social Sciences/Sociology", "3 Credits", Icons.Filled.Groups),
-    Subject("Business Law", "BUS 301", "Business/Law", "3 Credits", Icons.Filled.Gavel)
+val gradeBookData = GradeBook(
+    semester = "5th Semester",
+    gpa = 3.91,
+    grades = listOf(
+        Grade("Data Structures", "A", 85),
+        Grade("Operating Systems", "A-", 80),
+        Grade("Database Systems", "B+", 78),
+        Grade("Software Engineering", "A", 88),
+        Grade("Computer Networks", "B", 75)
+    ),
+    pdfUrl = ""
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +68,7 @@ fun GradebookScreen(navController: NavController, openDrawer: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Gradebook") },
+                title = { Text("Grade Book") },
                 navigationIcon = {
                     IconButton(onClick = openDrawer) {
                         Icon(Icons.Filled.Menu, contentDescription = "Menu")
@@ -64,88 +83,137 @@ fun GradebookScreen(navController: NavController, openDrawer: () -> Unit) {
         },
         bottomBar = { BottomNavigationBar(navController) }
     ) { padding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                 .padding(padding)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item {
+            Text(
+                text = gradeBookData.semester,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 16.dp),
+                textAlign = TextAlign.Center
+            )
+
+            if (gradeBookData.grades.isNotEmpty()) {
+                PerformanceSummaryCard(gradeBookData.gpa)
+                Spacer(modifier = Modifier.height(16.dp))
+                GradesListCard(gradeBookData.grades)
+                Spacer(modifier = Modifier.height(24.dp))
+                ActionButtons()
+                Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "BSIT-E1 5th",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 16.dp)
+                    text = "Results are provisional and subject to verification.",
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
-            }
-            items(subjects) { subject ->
-                SubjectCard(subject)
-                Spacer(modifier = Modifier.height(12.dp))
+            } else {
+                EmptyState()
             }
         }
     }
 }
 
 @Composable
-fun SubjectCard(subject: Subject) {
+fun PerformanceSummaryCard(gpa: Double) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        Row(
+        Column(
             modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    subject.icon,
-                    contentDescription = subject.discipline,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(subject.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(4.dp))
-                InfoRow(label = "Code:", value = subject.code)
-                InfoRow(label = "Discipline:", value = subject.discipline)
-                InfoRow(label = "Credits:", value = subject.credits)
+            Text("GPA", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = gpa.toString(),
+                fontSize = 48.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text("Excellent", color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+fun GradesListCard(grades: List<Grade>) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            grades.forEach { grade ->
+                GradeRow(grade)
             }
         }
     }
 }
 
 @Composable
-fun InfoRow(label: String, value: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = "$label ",
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
-        )
+fun GradeRow(grade: Grade) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(Icons.Filled.Star, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(grade.subject, fontWeight = FontWeight.Bold)
+            Text("Marks: ${grade.marks}", fontSize = 12.sp, color = Color.Gray)
+        }
+        Text(grade.grade, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.primary)
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GradebookScreenPreview() {
-    MaterialTheme {
-        GradebookScreen(navController = rememberNavController(), openDrawer = {})
+fun ActionButtons() {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
+        ) {
+            Button(onClick = { /* Handle View */ }, modifier = Modifier.weight(1f)) {
+                Icon(Icons.Filled.RemoveRedEye, contentDescription = "View")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("View Report")
+            }
+            Button(onClick = { /* Handle Download */ }, modifier = Modifier.weight(1f)) {
+                Icon(Icons.Filled.Download, contentDescription = "Download")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Download PDF")
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedButton(onClick = { /* Handle Share */ }, modifier = Modifier.fillMaxWidth()) {
+            Icon(Icons.Filled.Share, contentDescription = "Share")
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Share")
+        }
+    }
+}
+
+
+@Composable
+fun EmptyState() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Grade book is not available yet. Please check later.",
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
